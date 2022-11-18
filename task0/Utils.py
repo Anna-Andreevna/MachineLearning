@@ -8,14 +8,14 @@ def Area(curve):
         return 0
     return np.sum((y[1:] + y[:-1]) / 2 * (x[1:] - x[:-1]))
         
-def Plot(curve, ax=None, lim=[-0.01, 1.01], grid=True, format=".-"):
+def Plot(curve, ax=None, lim=[-0.01, 1.01], grid=True, format=".-", label=None):
     x = curve.x()
     y = curve.y()
     xlabel = curve.xlabel
     ylabel = curve.ylabel
     title = curve.title
     if (ax is None):
-        plt.plot(x, y, format)
+        plt.plot(x, y, format, label=label)
         plt.xlim(lim)
         plt.ylim(lim)
         plt.xlabel(xlabel)
@@ -23,7 +23,7 @@ def Plot(curve, ax=None, lim=[-0.01, 1.01], grid=True, format=".-"):
         plt.title(title)
         plt.grid(grid)
     else:
-        ax.plot(x, y, format)
+        ax.plot(x, y, format, label=label)
         ax.set_xlim(lim)
         ax.set_ylim(lim)
         ax.set_xlabel(xlabel)

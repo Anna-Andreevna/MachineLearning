@@ -2,14 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def Precision(preds, labels):
-    if not np.any(preds):
-        return 0
-    return np.sum(np.logical_and(preds, labels)) / np.sum(preds)
+    return np.sum(np.logical_and(preds, labels), 0) / (np.sum(preds, 0) + 1e-8)
 
 def Recall(preds, labels):
-    if not np.any(labels):
-        return 0
-    return np.sum(np.logical_and(preds, labels)) / np.sum(labels)
+    return np.sum(np.logical_and(preds, labels), 0) / (np.sum(labels, 0) + 1e-8)
 
 class PRCurve:
     xlabel = "Recall"
@@ -24,14 +20,20 @@ class PRCurve:
         self.precisions = np.empty(labels.size + 1, dtype=float)
         self.recalls = np.empty(labels.size + 1, dtype=float)
 
-        eps = 1e-6
-        for (i, pred) in enumerate(self.predictions):
-            threshold = pred - eps
-            self.precisions[-i-1] = Precision(self.predictions > threshold, self.labels)
-            self.recalls[-i-1] = Recall(self.predictions > threshold, self.labels)
-        self.precisions[0] = Precision(self.predictions > 1, self.labels)
-        self.recalls[0] = Recall(self.predictions > 1, self.labels)
+        threshold = np.flip(self.predictions).reshape(1, -1) - 1e-6
+        self.precisions[1:] = self.Precision(threshold)
+        self.recalls[1:] = self.Recall(threshold)
+        self.precisions[0] = self.Precision(1)
+        self.recalls[0] = self.Recall(1)
         
+    def Precision(self, threshold):
+        p = Precision(self.predictions.reshape(-1, 1) > threshold, self.labels.reshape(-1, 1))
+        return p if p.size > 1 else p[0]
+    
+    def Recall(self, threshold):
+        r = Recall(self.predictions.reshape(-1, 1) > threshold, self.labels.reshape(-1, 1))
+        return r if r.size > 1 else r[0]
+    
     def x(self):
         return self.recalls
     
