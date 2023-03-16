@@ -11,7 +11,7 @@ class PRCurve:
     xlabel = "Recall"
     ylabel = "Precision"
     title = "PR Curve"
-///<!--- Comments are Fun --->
+//
     
     def __init__(self, preds, labels):
         ind = np.argsort(preds)
